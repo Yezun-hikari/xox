@@ -2,7 +2,7 @@
 // Strength follows the bot's Elo: more lookahead and fewer random blunders the higher it is.
 import { applyMove, legalMoves, LINES, type GameState, type Player } from './rules.ts';
 
-export const BOT_ELO_MIN = 600;
+export const BOT_ELO_MIN = 0;
 export const BOT_ELO_MAX = 1400;
 
 const NAMES = ['Robo-Rudi', 'Pixel-Pia', 'Bit-Ben', 'Byte-Bea', 'Turbo-Tim', 'Nano-Nora', 'Gizmo-Gus', 'Chip-Chantal'];
@@ -58,7 +58,7 @@ function search(s: GameState, depth: number, me: Player, alpha: number, beta: nu
 export function chooseMove(state: GameState, elo: number, rng: () => number = Math.random): number {
   const moves = legalMoves(state);
   if (moves.length === 0) throw new Error('no legal move');
-  const blunder = Math.max(0.03, Math.min(0.5, (1500 - elo) / 1800));
+  const blunder = Math.max(0.03, Math.min(0.85, (1500 - elo) / 1800));
   if (rng() < blunder) return moves[Math.floor(rng() * moves.length)];
   const depth = elo < 1000 ? 2 : 4; // even depths only: odd ones end on our own move and ignore the reply
   const me = state.turn;

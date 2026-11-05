@@ -21,7 +21,7 @@ Backend: Supabase (Auth, Postgres + RLS, Realtime, Edge Functions). The server i
 | table | columns | client read |
 |---|---|---|
 | profiles | id uuid PK → auth.users, nickname text (unique, case-insensitive), created_at | own row |
-| ratings | user_id, game, elo int default 1000, games int, wins int; PK(user_id, game) | own rows |
+| ratings | user_id, game, elo int default 100, games int, wins int; PK(user_id, game) | own rows |
 | queue | id PK (random surrogate: Realtime DELETE payloads carry only the PK, unfiltered by RLS), user_id unique, game, elo, nickname, joined_at, last_seen, match_id uuid null | own row |
 | matches | id, game, x_id, o_id, x_nick, o_nick, x_elo, o_elo, state jsonb (GameState), status 'active'/'finished', winner_id, elo_delta int, turn_deadline timestamptz, created_at, updated_at | if participant |
 
@@ -42,12 +42,12 @@ All return JSON; errors as `{ error: '<code>' }` with 4xx status.
 - Default privileges in `public` are revoked for `anon`/`authenticated`: every new table/sequence/function needs explicit grants (and RLS).
 - Known limit: `updateUser({ password })` cannot be verified server-side without email reauthentication; the client re-checks the current password only.
 
-- `bot-game` `{ game }` → `{ status: 'matched', matchId }` | `no_nickname` | 429 `rate_limited`. Starts (or resumes) a **rated** match against the bot. Bot name/Elo/seat are picked here (`_shared/bot.ts`: Elo = player ±100, clamped 600–1400).
+- `bot-game` `{ game }` → `{ status: 'matched', matchId }` | `no_nickname` | 429 `rate_limited`. Starts (or resumes) a **rated** match against the bot. Bot name/Elo/seat are picked here (`_shared/bot.ts`: Elo = player ±100, clamped 0–1400).
 - `bot-move` `{ matchId }` → `{ state, events }`. Plays the bot's move if it is the bot's turn in the caller's bot match (`not_bot_turn` otherwise). The client calls it after a short "thinking" pause.
 
 Bots: one fixed, unusable auth user (`b07b07b0-0000-4000-8000-000000000001`, banned, no password) is the opponent so `matches` keeps its foreign keys; `matches.is_bot = true`. The bot's Elo lives only in `matches.x_elo/o_elo` for that match, never in `ratings`; `finish_match` changes only the human's rating. Farming limits: bot Elo is capped at 1400 (stronger players gain ~0) and one new bot match per 60 s. The AI is minimax with alpha-beta, even depths only (2 below Elo 1000, else 4) plus a Elo-dependent blunder chance.
 
-Elo: K = 32, start 1000, expected = 1 / (1 + 10^((Rb − Ra) / 400)). Applied atomically in SQL function `finish_match(match_id, winner_id)` (security definer, not callable by clients).
+Elo: K = 32, start 100, floor 0, expected = 1 / (1 + 10^((Rb − Ra) / 400)). Applied atomically in SQL function `finish_match(match_id, winner_id)` (security definer, not callable by clients).
 
 ## Shared code
 - `supabase/functions/_shared/rules.ts` — game rules, imported by both the frontend and Edge Functions.

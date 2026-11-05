@@ -70,7 +70,7 @@ export async function loadRating(userId: string): Promise<Rating> {
     .eq('game', GAME)
     .maybeSingle();
   if (error) throw new ApiError('network');
-  return data ?? { elo: 1000, games: 0, wins: 0 };
+  return data ?? { elo: 100, games: 0, wins: 0 };
 }
 
 /**

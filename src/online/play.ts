@@ -312,7 +312,7 @@ export const onlineScreen: Screen = {
           const won = m.winner_id === user.id;
           const mine = me === 'X' ? m.x_elo : m.o_elo;
           const d = won ? m.elo_delta : -m.elo_delta;
-          return `Elo: ${mine} → ${mine + d} (${d >= 0 ? '+' : ''}${d})`;
+          return `Elo: ${mine} → ${Math.max(0, mine + d)} (${d >= 0 ? '+' : ''}${d})`;
         }
 
         // shortcut: uses the local clock; the server re-checks the deadline on claim, so skew only delays the button

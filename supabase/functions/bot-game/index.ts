@@ -16,7 +16,7 @@ serve(async ({ userId, body, db }) => {
       p_game: game,
       p_state: newGame('X'), // X always starts; the bot gets the X seat half of the time
       p_bot_nick: botName(),
-      p_bot_elo: botEloFor(rating?.elo ?? 1000),
+      p_bot_elo: botEloFor(rating?.elo ?? 100),
       p_bot_is_x: Math.random() < 0.5,
     }),
   ) as { status: 'matched'; matchId: string } | { error: string };
