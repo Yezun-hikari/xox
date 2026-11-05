@@ -2,6 +2,7 @@ import type { GameEvent, GameState, Player } from '../../supabase/functions/_sha
 import { SIZE } from '../../supabase/functions/_shared/rules.ts';
 import { cellName, withoutScoredClears } from './events.ts';
 import { pieceSvg } from './pieces.ts';
+import { play, type SoundName } from './sound.ts';
 
 export interface BoardOptions {
   /** Called for clicks / Enter on an empty cell while the board is interactive. */
@@ -136,7 +137,14 @@ export function createBoard(container: HTMLElement, { onCellClick }: BoardOption
     if (!prev) return;
 
     const mover = prev.turn; // the player who just moved
+    const sounds = new Set<SoundName>();
+    // events.length: a clearing move leaves no new piece. prev.board check: online redraws may repeat lastMove.
+    if (events.length || (placed >= 0 && next.board[placed] && !prev.board[placed])) {
+      const p = next.board[placed]?.p ?? mover;
+      sounds.add(!opts.myPlayer || p === opts.myPlayer ? 'place' : 'placeOpponent');
+    }
     for (const e of withoutScoredClears(events)) {
+      if (e.kind !== 'pass') sounds.add(e.kind);
       if (e.kind === 'score' || e.kind === 'clear') {
         for (const i of e.line) ghost(i, prev.board[i]?.p ?? mover, e.kind);
       } else if (e.kind === 'freeze') {
@@ -146,6 +154,8 @@ export function createBoard(container: HTMLElement, { onCellClick }: BoardOption
         if (p) ghost(e.cell, p, 'thaw');
       }
     }
+    // Slight stagger so one move's sounds stay distinct instead of smearing together.
+    [...sounds].forEach((s, i) => setTimeout(() => play(s), i * 90));
   }
 
   return {

@@ -48,6 +48,20 @@ export async function call<T>(fn: string, body: Record<string, unknown>): Promis
 export const errorText = (e: unknown): string =>
   e instanceof ApiError || e instanceof AuthFailure ? e.message : 'Unbekannter Fehler. Bitte erneut versuchen.';
 
+// Separate from MESSAGES: profane and rate_limited there speak of nicknames and bot games.
+const CHAT_MESSAGES: Record<string, string> = {
+  empty: 'Bitte gib eine Nachricht ein.',
+  too_long: 'Die Nachricht ist zu lang (höchstens 200 Zeichen).',
+  profane: 'Diese Nachricht ist nicht erlaubt.',
+  link: 'Links und Kontaktdaten sind im Chat nicht erlaubt.',
+  chat_closed: 'Der Chat ist geschlossen.',
+  rate_limited: 'Du schreibst gerade zu schnell. Bitte warte kurz.',
+};
+
+/** German message for an error from chat-send. */
+export const chatErrorText = (e: unknown): string =>
+  (e instanceof ApiError && CHAT_MESSAGES[e.code]) || errorText(e);
+
 export interface Rating {
   elo: number;
   games: number;

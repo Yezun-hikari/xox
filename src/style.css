@@ -751,3 +751,256 @@ dialog.rules::backdrop {
     animation-duration: 3s;
   }
 }
+
+/* sound */
+#mute-toggle svg {
+  stroke-linejoin: round;
+}
+#mute-toggle[aria-pressed='true'] .snd-on,
+#mute-toggle[aria-pressed='false'] .snd-off {
+  display: none;
+}
+
+/* chat */
+.game.has-chat {
+  position: relative;
+}
+.chat {
+  position: absolute; /* never takes a row in the .game grid */
+}
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.chat-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 4px 4px 4px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.chat-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.chat-mute {
+  flex: none;
+  min-height: 32px;
+  margin-right: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.chat-mute[aria-pressed='true'] {
+  background: var(--text);
+  border-color: transparent;
+  color: var(--bg);
+}
+.chat-close {
+  flex: none;
+  border: 0;
+  background: transparent;
+}
+.chat-list {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.chat-list:empty::before {
+  content: 'Noch keine Nachrichten.';
+  margin: auto;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.chat-msg {
+  align-self: flex-start;
+  max-width: 85%;
+  padding: 6px 12px;
+  border-radius: 16px 16px 16px 4px;
+  background: var(--surface-2);
+  overflow-wrap: anywhere;
+}
+.chat-msg.mine {
+  align-self: flex-end;
+  border-radius: 16px 16px 4px 16px;
+  background: var(--accent);
+  color: var(--accent-text);
+}
+.chat-note {
+  margin: 0;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.chat-error {
+  margin: 0;
+  padding: 8px 12px 0;
+  font-size: 0.85rem;
+}
+.chat-form {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+}
+.chat-form input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+.chat-form input[aria-invalid='true'] {
+  border-color: var(--x);
+}
+.chat-form .btn {
+  flex: none;
+  min-height: 44px;
+  padding: 8px 14px;
+  box-shadow: none;
+}
+
+/* Mobile: floating button that morphs into the popup */
+@media (max-width: 899.98px) {
+  .game.has-chat {
+    padding-bottom: 72px; /* room for the button below the last control */
+  }
+  .chat-fab {
+    position: fixed;
+    right: calc(16px + env(safe-area-inset-right));
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    z-index: 9;
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-text);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: transform 0.22s ease, opacity 0.12s ease, visibility 0s;
+  }
+  .chat-fab svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linejoin: round;
+  }
+  .chat-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 5px;
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--bg);
+    border-radius: 999px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .chat.open .chat-fab {
+    transform: scale(0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.22s ease, opacity 0.12s ease, visibility 0s 0.22s;
+  }
+  .chat-panel {
+    position: fixed;
+    right: calc(16px + env(safe-area-inset-right));
+    bottom: calc(16px + env(safe-area-inset-bottom) + var(--chat-kb, 0px));
+    z-index: 11;
+    width: min(24rem, calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+    height: min(32rem, calc(var(--chat-vh, 100dvh) - 32px - env(safe-area-inset-top)));
+    box-shadow: 0 20px 60px rgb(0 0 0 / 0.3);
+    /* shrinks exactly onto the button, whose corner this shares */
+    transform-origin: 100% 100%;
+    transform: scale(0.15, 0.1);
+    border-radius: 50%;
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), border-radius 0.22s ease, opacity 0.12s ease, visibility 0s 0.22s;
+  }
+  .chat.open .chat-panel {
+    transform: none;
+    border-radius: var(--radius);
+    opacity: 1;
+    visibility: visible;
+    transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), border-radius 0.22s ease, opacity 0.12s ease, visibility 0s;
+  }
+}
+@media (max-width: 899.98px) and (prefers-reduced-motion: reduce) {
+  .chat .chat-fab,
+  .chat .chat-panel,
+  .chat.open .chat-fab,
+  .chat.open .chat-panel {
+    transition: none !important; /* the global rule only shortens durations, not the visibility delay */
+  }
+}
+
+/* Desktop: panel beside the board, as tall as the game column */
+@media (min-width: 900px) {
+  main:has(.has-chat) {
+    max-width: calc(40rem + 340px + 2 * var(--gutter));
+  }
+  .game.has-chat {
+    padding-right: 340px;
+  }
+  .chat {
+    top: 0;
+    right: 0;
+    width: 320px;
+    height: min(100%, calc(100dvh - 80px)); /* input stays on screen below the top bar */
+  }
+  .chat-panel {
+    height: 100%;
+  }
+  .chat-fab,
+  .chat-close {
+    display: none;
+  }
+}
+/* Room for both sides: the board stays centred on the page, under the top bar */
+@media (min-width: 1360px) {
+  main:has(.has-chat) {
+    max-width: calc(40rem + 680px + 2 * var(--gutter));
+  }
+  .game.has-chat {
+    padding-inline: 340px;
+  }
+}

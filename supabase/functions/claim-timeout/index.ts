@@ -4,6 +4,8 @@ import { finish, loadActiveMatch } from '../_server/match.ts';
 
 serve(async ({ userId, body, db }) => {
   const { m, me } = await loadActiveMatch(db, body.matchId, userId);
+  // the client triggers the bot's move: without this, not asking for it for 60 s would win a rated game
+  if (m.is_bot) throw new HttpError(400, 'invalid');
   if (m.state.turn === me) throw new HttpError(409, 'not_opponent_turn');
   if (Date.now() <= Date.parse(m.turn_deadline)) throw new HttpError(409, 'not_expired');
   // expectUnchanged: a move that lands concurrently wins the race and this claim fails with conflict

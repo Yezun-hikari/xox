@@ -1,16 +1,22 @@
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import type { GameEvent, GameState, Player } from '../../supabase/functions/_shared/rules.ts';
 import { applyMove } from '../../supabase/functions/_shared/rules.ts';
+import { thinkTimeMs } from '../../supabase/functions/_shared/bot.ts';
 import { ensureSession, getClient, isConfigured, NOT_CONFIGURED, type AuthUser } from '../auth/index.ts';
 import { announce, toast } from '../ui/announce.ts';
 import { createBoard } from '../ui/board.ts';
 import { cellName, describeEvents } from '../ui/events.ts';
 import type { Screen } from '../ui/router.ts';
 import { createScoreboard } from '../ui/scoreboard.ts';
+import { play } from '../ui/sound.ts';
 import { call, errorText, GAME, loadNickname, loadRating, nicknameForm, notConfigured, ratingText } from './api.ts';
+import { createChat, type Chat } from './chat.ts';
 
 const BOT_OFFER_MS = 5_000;
 const HEARTBEAT_MS = 8_000; // server drops waiting players not seen for 20 s
+const CHAT_OPEN_AFTER_FINISH_MS = 10 * 60_000; // same as chat-send, which has the last word
+const RESULT_SOUND_DELAY_MS = 450; // the board plays place and score first
+const TURN_SOUND_DELAY_MS = 250; // after the board's sound for the opponent's move
 
 interface MatchRow {
   id: string;
@@ -27,6 +33,7 @@ interface MatchRow {
   x_delta: number | null;
   o_delta: number | null;
   turn_deadline: string;
+  updated_at: string;
   is_bot: boolean;
 }
 
@@ -142,7 +149,10 @@ export const onlineScreen: Screen = {
           finish();
           try {
             const r = await call<MatchResult>('matchmake', { action: 'leave', game: GAME });
-            if (r.status === 'matched') return game(r.matchId);
+            if (r.status === 'matched') {
+              play('match');
+              return game(r.matchId);
+            }
           } catch {
             /* leaving is best effort: the server drops us after 20 s without heartbeat anyway */
           }
@@ -181,6 +191,7 @@ export const onlineScreen: Screen = {
         };
         const matched = (id: string) => {
           finish();
+          play('match');
           game(id);
         };
         const channel: RealtimeChannel = getClient()
@@ -244,6 +255,10 @@ export const onlineScreen: Screen = {
         let pending = false;
         let closed = false;
         let botBusy = false;
+        let chat: Chat | null = null;
+        let chatCloseTimer = 0;
+        // Game events must not pull the cursor out of a message being typed.
+        const typingInChat = () => !!document.activeElement?.closest('.chat');
 
         const board = createBoard($('[data-board]'), {
           async onCellClick(i) {
@@ -290,6 +305,10 @@ export const onlineScreen: Screen = {
           $('[data-actions]').hidden = finished;
           $('[data-end]').hidden = !finished;
           if (finished) $('[data-result]').textContent = eloText();
+          if (finished && chat && !chatCloseTimer) {
+            const left = Date.parse(m.updated_at) + CHAT_OPEN_AFTER_FINISH_MS - Date.now();
+            chatCloseTimer = window.setTimeout(() => chat?.setClosed(true), Math.max(0, left));
+          }
           tick();
           botTurn();
         }
@@ -307,7 +326,7 @@ export const onlineScreen: Screen = {
             await refetch();
             botBusy = false;
             botTurn(); // after an auto-pass the bot may move again
-          }, 200 + Math.random() * 300);
+          }, thinkTimeMs(m.state, opp().elo));
         }
 
         function resultText(): string {
@@ -355,9 +374,14 @@ export const onlineScreen: Screen = {
           }
           if (prev?.status === 'active' && next.status === 'finished') {
             announce(`${resultText()} ${eloText()}`);
-            $('[data-again]').focus();
+            if (!typingInChat()) $('[data-again]').focus();
+            if (next.winner_id) {
+              const won = next.winner_id === user.id;
+              setTimeout(() => !closed && play(won ? 'win' : 'lose'), RESULT_SOUND_DELAY_MS);
+            }
           } else if (prev && prev.state.turn !== me && next.state.turn === me && next.status === 'active') {
-            board.focus();
+            if (!typingInChat()) board.focus();
+            setTimeout(() => !closed && play('turn'), TURN_SOUND_DELAY_MS);
           }
         }
 
@@ -370,6 +394,9 @@ export const onlineScreen: Screen = {
           // an answer older than what we already show (it was sent before our last move)
           if (m && row.status === 'active' && row.state.moves < m.state.moves) return;
           me = row.x_id === user.id ? 'X' : 'O';
+          if (!row.is_bot && !chat) {
+            chat = createChat(view, { matchId, userId: user.id, opponentNick: me === 'X' ? row.o_nick : row.x_nick });
+          }
           if (!m || !sameState(m.state, row.state) || m.status !== row.status || m.turn_deadline !== row.turn_deadline) {
             applyState(row);
           }
@@ -437,6 +464,8 @@ export const onlineScreen: Screen = {
         document.addEventListener('visibilitychange', onVisible);
         return () => {
           closed = true;
+          clearTimeout(chatCloseTimer);
+          chat?.destroy();
           clearInterval(timer);
           clearInterval(poll);
           document.removeEventListener('visibilitychange', onVisible);

@@ -1,5 +1,5 @@
 // POST { matchId } -> { state, events } : plays the bot's move if it is the bot's turn in the caller's bot match
-import { chooseMove } from '../_shared/bot.ts';
+import { chooseMove, styleOf } from '../_shared/bot.ts';
 import { applyMove } from '../_shared/rules.ts';
 import { check, HttpError, serve, TURN_MS } from '../_server/http.ts';
 import { finish, loadActiveMatch } from '../_server/match.ts';
@@ -10,7 +10,8 @@ serve(async ({ userId, body, db }) => {
   if (m.state.turn === me) throw new HttpError(409, 'not_bot_turn');
 
   const botElo = me === 'X' ? m.o_elo : m.x_elo;
-  const res = applyMove(m.state, chooseMove(m.state, botElo));
+  const botNick = me === 'X' ? m.o_nick : m.x_nick;
+  const res = applyMove(m.state, chooseMove(m.state, botElo, Math.random, styleOf(botNick)));
   const botId = me === 'X' ? m.o_id : m.x_id;
 
   if (res.state.winner) {

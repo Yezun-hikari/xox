@@ -6,6 +6,7 @@ import { cellName, describeEvents } from './events.ts';
 import type { Screen } from './router.ts';
 import { openRules } from './rules-dialog.ts';
 import { createScoreboard } from './scoreboard.ts';
+import { play } from './sound.ts';
 
 const LOGO = `<svg class="logo" viewBox="0 0 120 40" aria-hidden="true">
   <path class="lx" d="M6 8l24 24M30 8L6 32"/><circle class="lo" cx="60" cy="20" r="12"/><path class="lx" d="M90 8l24 24M114 8L90 32"/></svg>`;
@@ -88,7 +89,10 @@ export const localScreen: Screen = {
         announce(lines.join(' '));
         const visible = describeEvents(res.events.filter((e) => e.kind === 'pass' || e.kind === 'score'));
         if (visible.length && !state.winner) toast(visible.join(' '));
-        if (state.winner) $('[data-rematch]').focus();
+        if (state.winner) {
+          $('[data-rematch]').focus();
+          setTimeout(() => play('win'), 450); // after the place and score sounds of the winning move
+        }
       },
     });
 

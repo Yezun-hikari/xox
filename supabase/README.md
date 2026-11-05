@@ -47,6 +47,9 @@ Entwicklung**. Im gehosteten Projekt musst du sie selbst setzen:
   Partie haben. Kontrolle: **Integrations → Cron** zeigt den Job `purge-stale-guests`. Fehlt er (z. B. weil
   `pg_cron` beim `db push` nicht verfügbar war), `pg_cron` aktivieren und im SQL Editor ausführen:
   `select cron.schedule('purge-stale-guests', '17 3 * * *', 'select public.purge_stale_guests()');`
+- `pg_cron` löscht außerdem stündlich Chat-Nachrichten, die älter als 24 Stunden sind (Job `purge-old-chat-messages`).
+  Fehlt der Job, genauso im SQL Editor nachholen:
+  `select cron.schedule('purge-old-chat-messages', '23 * * * *', $$delete from public.match_messages where created_at < now() - interval '24 hours'$$);`
 - Optional: Authentication → Attack Protection → CAPTCHA. Erst aktivieren, wenn das Frontend es unterstützt
   (sonst schlägt jede Gast-Anmeldung fehl).
 - **Nach der Einrichtung einmal testen:** auf der Seite ein Konto registrieren und wieder löschen. Das prüft,
@@ -88,7 +91,7 @@ Nach dem Datenbank-Passwort fragen lassen und eingeben (nicht als Parameter in d
 npx supabase db push
 ```
 
-Das legt die Tabellen `profiles`, `ratings`, `queue`, `matches` mit allen Sicherheitsregeln an.
+Das legt die Tabellen `profiles`, `ratings`, `queue`, `matches`, `match_messages` mit allen Sicherheitsregeln an.
 Kontrolle im Dashboard unter **Table Editor**: bei jeder Tabelle steht "RLS enabled".
 
 ## 6. Edge Functions hochladen
@@ -97,8 +100,8 @@ Kontrolle im Dashboard unter **Table Editor**: bei jeder Tabelle steht "RLS enab
 npx supabase functions deploy --project-ref <reference-id>
 ```
 
-Danach sind unter **Edge Functions** acht Funktionen sichtbar:
-`set-nickname`, `matchmake`, `move`, `resign`, `claim-timeout`, `delete-account`, `bot-game`, `bot-move`.
+Danach sind unter **Edge Functions** neun Funktionen sichtbar:
+`set-nickname`, `matchmake`, `move`, `resign`, `claim-timeout`, `delete-account`, `bot-game`, `bot-move`, `chat-send`.
 
 ## 7. GitHub einrichten (automatisches Deployment)
 
@@ -147,7 +150,7 @@ Funktioniert nur im Entwicklungsmodus, nicht auf der veröffentlichten Seite.
 ## Was wo liegt
 
 - `migrations/` – Datenbankschema, RLS, SQL-Funktionen `finish_match`, `matchmake`, `ping`,
-  `purge_stale_guests`, Trigger `enforce_synthetic_email`
+  `purge_stale_guests`, `send_match_message`, Trigger `enforce_synthetic_email`
 - `functions/<name>/index.ts` – die Edge Functions
 - `functions/_shared/` – Code, den auch das Frontend nutzt (`rules.ts`, `profanity.ts`)
 - `functions/_server/` – nur für Edge Functions (CORS, Login-Prüfung, Datenbankzugriff)

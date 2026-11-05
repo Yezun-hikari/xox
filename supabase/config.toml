@@ -445,3 +445,6 @@ verify_jwt = true
 
 [functions.bot-move]
 verify_jwt = true
+
+[functions.chat-send]
+verify_jwt = true
