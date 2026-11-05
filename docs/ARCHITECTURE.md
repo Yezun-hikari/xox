@@ -1,6 +1,6 @@
 # Architecture
 
-Frontend: static Vite + TypeScript app on GitHub Pages (`https://yezun-hikari.github.io/xox/`).
+Frontend: static Vite + TypeScript app on GitHub Pages (`https://yezun.de/xox/`).
 Backend: Supabase (Auth, Postgres + RLS, Realtime, Edge Functions). The server is authoritative for online games and Elo.
 
 ## Privacy rules (non-negotiable)
@@ -11,7 +11,7 @@ Backend: Supabase (Auth, Postgres + RLS, Realtime, Edge Functions). The server i
 - Login name is private (stored only inside `auth.users` as a synthetic email). Nickname is the only public-facing name, and only shown to the current opponent.
 
 ## Accounts (shared across all of Yezun's minigames)
-- Same Supabase project for every game. Auth client uses `storageKey: 'yezun-games-auth'`, so all games on `yezun-hikari.github.io` share one session.
+- Same Supabase project for every game. Auth client uses `storageKey: 'yezun-games-auth'`, so all games on `yezun.de` share one session.
 - Guests: Supabase anonymous sign-in. Register = upgrade the anonymous user in place (`updateUser({ email, password })`), so Elo is kept.
 - Username + password only. Username `^[a-z0-9_]{3,20}$` (lowercased), mapped to synthetic email `<username>@users.yezun-games.invalid` (reserved TLD, never a real mailbox; accepted by GoTrue). Password 8–72 chars. Email confirmation disabled. No password reset possible (by design: no email stored).
 - Client module: `src/auth/` (framework-free, reusable by other games, see its README). Logging into an existing account while a guest deletes that guest (best effort, via `delete-account` with the guest's token) so no orphaned data remains. Changing the password (client-side check only) and deleting a registered account (server-side check) require the current password. All games share `localStorage` on one origin, so every game must be XSS-free.

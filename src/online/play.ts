@@ -376,11 +376,15 @@ export const onlineScreen: Screen = {
         $('[data-again]').addEventListener('click', () => void search());
 
         const timer = setInterval(tick, 1000);
+        // Realtime is only a speed-up: load now and poll, so the game also works if the subscription never connects.
+        void refetch();
+        const poll = setInterval(() => m?.status !== 'finished' && void refetch(), 3000);
         const onVisible = () => document.visibilityState === 'visible' && void refetch();
         document.addEventListener('visibilitychange', onVisible);
         return () => {
           closed = true;
           clearInterval(timer);
+          clearInterval(poll);
           document.removeEventListener('visibilitychange', onVisible);
           void getClient().removeChannel(channel);
           view.className = 'panel';

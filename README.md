@@ -3,7 +3,7 @@
 Eine moderne Variante von Tic-Tac-Toe auf einem 4x4-Feld mit Eis-Mechanik, Online-Matchmaking, Elo-Wertung und optionalem Konto.
 Läuft komplett im Browser (GitHub Pages), das Online-Backend liegt bei Supabase.
 
-**Spielen:** <https://yezun-hikari.github.io/xox/>
+**Spielen:** <https://yezun.de/xox/>
 
 ## Spielregeln
 
@@ -52,7 +52,7 @@ Der Server ist maßgeblich: Züge und Elo werden nur in Edge Functions geprüft 
 - Im Browser stehen nur die öffentliche Projekt-URL und der „publishable“ Key. Geheime Schlüssel gehören nie ins Repo.
 - Die Datenbank lehnt echte E-Mail-Adressen ab (nur künstliche Adressen für den Login-Namen).
 - Konto löschen entfernt alle zugehörigen Daten. Inaktive Gastkonten werden nach 30 Tagen automatisch gelöscht.
-- Bekannte Grenzen: kein Passwort-Reset (bewusst, es gibt keine E-Mail), und alle Spiele unter `yezun-hikari.github.io`
+- Bekannte Grenzen: kein Passwort-Reset (bewusst, es gibt keine E-Mail), und alle Spiele unter `yezun.de`
   teilen sich den Browser-Speicher der Sitzung, deshalb muss jedes dieser Spiele frei von XSS sein.
   Mehr dazu in [`src/auth/README.md`](src/auth/README.md).
 

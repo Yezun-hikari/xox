@@ -1,6 +1,6 @@
 # `src/auth` – shared login for Yezun's minigames
 
-One Supabase project serves every game on `yezun-hikari.github.io`. This folder is the whole
+One Supabase project serves every game on `yezun.de`. This folder is the whole
 client-side auth: framework-free, no imports from any game, only `@supabase/supabase-js`.
 
 ## Reuse in another game
@@ -13,7 +13,7 @@ client-side auth: framework-free, no imports from any game, only `@supabase/supa
    the game's offline parts keep working.
 
 Session sharing: the client uses `storageKey: 'yezun-games-auth'` in `localStorage`. All games on the same
-origin (`https://yezun-hikari.github.io/<game>/`) therefore share one session: log in once, signed in everywhere.
+origin (`https://yezun.de/<game>/`) therefore share one session: log in once, signed in everywhere.
 Ratings are per game (`ratings.game` column), nickname and account are shared.
 
 ## API
@@ -53,7 +53,7 @@ Every failure is an `AuthFailure` whose `message` is German and safe to show. A 
 
 ## Security notes
 
-- **Shared `localStorage`:** every game on `yezun-hikari.github.io` runs on the same origin and can read the
+- **Shared `localStorage`:** every game on `yezun.de` runs on the same origin and can read the
   shared session token. One XSS bug in any game compromises the accounts of all games. Every game must be
   XSS-free: never put user data (nicknames, usernames, server responses) into `innerHTML` or similar; use
   `textContent` / `createElement`.

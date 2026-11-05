@@ -15,7 +15,7 @@ export interface Ctx {
   db: SupabaseClient; // service role: bypasses RLS, never expose its results unfiltered
 }
 
-const PROD_ORIGIN = 'https://yezun-hikari.github.io';
+const PROD_ORIGIN = 'https://yezun.de';
 const DEV_ORIGIN = /^http:\/\/(localhost|127\.0\.0\.1)(:\d{1,5})?$/;
 
 function corsHeaders(origin: string | null): Record<string, string> {

@@ -31,14 +31,14 @@ Entwicklung**. Im gehosteten Projekt musst du sie selbst setzen:
 | Authentication → Sign In / Providers → **Email** | **Confirm email** | **aus** |
 | Authentication → Sign In / Providers → **Email** | Secure email change | aus |
 | Authentication → Sign In / Providers → **Email** | **Minimum password length** | **8** |
-| Authentication → URL Configuration | Site URL | `https://yezun-hikari.github.io/xox/` |
+| Authentication → URL Configuration | Site URL | `https://yezun.de/xox/` |
 | Authentication → URL Configuration | Redirect URLs | `http://localhost:5173/xox/` hinzufügen |
 
 ### Härtung (Pflicht, einmalig)
 
 | Wo im Dashboard | Einstellung | Wert |
 |---|---|---|
-| Realtime → Settings | **Allow public access** | **aus** (nur private Channels; `postgres_changes` mit RLS funktioniert weiter) |
+| Realtime → Settings | **Allow public access** | **aus**. Folge: Live-Updates per Realtime verbinden sich nicht (Channels sind dann nur privat). Das ist gewollt, die Seite fragt den Spielstand stattdessen alle 3 Sekunden ab. Auf "an" stellen ist nur nötig, wenn Zugriff ohne Wartezeit wichtiger ist als diese Härtung. |
 | Database → Extensions | `pg_graphql` | **deaktiviert** (wird nicht gebraucht, vergrößert nur die Angriffsfläche) |
 | Database → Extensions | `pg_cron` | **aktiviert** (Migration macht das selbst; nur prüfen) |
 | Authentication → Rate Limits | Anonyme Anmeldungen pro Stunde und IP | niedrig, z. B. **30** |

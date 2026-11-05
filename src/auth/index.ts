@@ -1,5 +1,5 @@
 /**
- * Shared auth for Yezun's minigames (same Supabase project, same session on yezun-hikari.github.io).
+ * Shared auth for Yezun's minigames (same Supabase project, same session on yezun.de).
  * Framework-free, no game-specific imports. See README.md in this folder.
  *
  * Accounts are username + password. The username is mapped to a synthetic email under a reserved
