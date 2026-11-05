@@ -26,6 +26,7 @@ Läuft komplett im Browser (GitHub Pages), das Online-Backend liegt bei Supabase
 
 - **Lokal** zu zweit auf einem Gerät.
 - **Online-Matchmaking** mit Gegnern ähnlicher Elo, 60 Sekunden pro Zug, Aufgeben und Sieg bei Zeitüberschreitung.
+- **Gegen Bot spielen:** Findet sich nach 5 Sekunden kein Gegner, erscheint der Button "Gegen Bot spielen". Der Bot ist eine kleine KI (Minimax-Suche, Stärke und Fehlerquote folgen seiner Elo) mit einer Elo nahe an deiner (±100, zwischen 600 und 1400). Bot-Partien sind gewertet; ein neues Bot-Spiel ist höchstens einmal pro Minute möglich.
 - **Elo-Wertung** wie im Schach (Start 1000, K = 32), serverseitig berechnet und nicht manipulierbar durch den Client.
 - **Nickname** mit Schimpfwort-Filter (Deutsch und Englisch, erkennt Leetspeak und Umlaute).
 - **Gast oder Konto:** Gäste spielen sofort. Wer sich mit Benutzername und Passwort registriert, behält seine Elo.
@@ -89,7 +90,7 @@ src/
   auth/       Wiederverwendbares Login-Modul für weitere Minispiele
 supabase/
   migrations/ Datenbankschema, Sicherheitsregeln, Elo-Funktionen
-  functions/  Edge Functions: matchmake, move, resign, claim-timeout, set-nickname, delete-account
+  functions/  Edge Functions: matchmake, move, resign, claim-timeout, set-nickname, delete-account, bot-game, bot-move
     _shared/  Code, den auch das Frontend nutzt (rules.ts, profanity.ts)
 docs/         Architektur und Datenmodell
 .github/      Workflows: Pages-Deploy, Supabase-Deploy, Keepalive

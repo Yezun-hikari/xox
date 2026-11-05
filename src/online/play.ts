@@ -9,6 +9,7 @@ import type { Screen } from '../ui/router.ts';
 import { createScoreboard } from '../ui/scoreboard.ts';
 import { call, errorText, GAME, loadNickname, loadRating, nicknameForm, notConfigured } from './api.ts';
 
+const BOT_OFFER_MS = 5_000;
 const HEARTBEAT_MS = 8_000; // server drops waiting players not seen for 20 s
 
 interface MatchRow {
@@ -24,6 +25,7 @@ interface MatchRow {
   winner_id: string | null;
   elo_delta: number | null;
   turn_deadline: string;
+  is_bot: boolean;
 }
 
 type MatchResult = { status: 'waiting' } | { status: 'matched'; matchId: string } | { status: 'left' };
@@ -144,7 +146,23 @@ export const onlineScreen: Screen = {
           }
           start();
         });
-        view.append(head('Online spielen', false), spinner, p, cancel);
+        const botBtn = button('Gegen Bot spielen', 'primary', async () => {
+          botBtn.disabled = true;
+          try {
+            const r = await call<{ matchId: string }>('bot-game', { game: GAME });
+            if (!done) matched(r.matchId);
+          } catch (e) {
+            botBtn.disabled = false;
+            toast(errorText(e));
+          }
+        });
+        botBtn.hidden = true;
+        // keep waiting for a human; offer the bot after 5 s
+        const botTimer = setTimeout(() => {
+          botBtn.hidden = false;
+          announce('Kein Gegner gefunden. Du kannst gegen einen Bot spielen.');
+        }, BOT_OFFER_MS);
+        view.append(head('Online spielen', false), spinner, p, botBtn, cancel);
         announce('Suche Gegner.');
 
         const join = async () => {
@@ -180,6 +198,7 @@ export const onlineScreen: Screen = {
 
         function finish(): void {
           done = true;
+          clearTimeout(botTimer);
           clearInterval(timer);
           document.removeEventListener('visibilitychange', onVisible);
           void getClient().removeChannel(channel);
@@ -222,6 +241,7 @@ export const onlineScreen: Screen = {
         let me: Player = 'X';
         let pending = false;
         let closed = false;
+        let botBusy = false;
 
         const board = createBoard($('[data-board]'), {
           async onCellClick(i) {
@@ -263,6 +283,23 @@ export const onlineScreen: Screen = {
           $('[data-end]').hidden = !finished;
           if (finished) $('[data-result]').textContent = eloText();
           tick();
+          botTurn();
+        }
+
+        /** Bot matches: after a short "thinking" pause ask the server for the bot's move, then resync. */
+        function botTurn(): void {
+          if (!m?.is_bot || m.status !== 'active' || m.state.turn === me || botBusy || closed) return;
+          botBusy = true;
+          setTimeout(async () => {
+            try {
+              if (!closed) await call('bot-move', { matchId });
+            } catch {
+              /* e.g. not_bot_turn after a resync: the refetch below shows the real state */
+            }
+            await refetch();
+            botBusy = false;
+            botTurn(); // after an auto-pass the bot may move again
+          }, 600 + Math.random() * 700);
         }
 
         function resultText(): string {
@@ -289,7 +326,7 @@ export const onlineScreen: Screen = {
           const mine = m.state.turn === me;
           timerEl.textContent = mine ? `Deine Zugzeit: ${left} s` : `Zugzeit des Gegners: ${left} s`;
           timerEl.classList.toggle('urgent', left <= 10);
-          claim.hidden = mine || left > 0;
+          claim.hidden = mine || left > 0 || m.is_bot;
         }
 
         function applyState(next: MatchRow, events?: GameEvent[], lastMove?: number): void {

@@ -12,6 +12,7 @@ const MESSAGES: Record<string, string> = {
   not_your_turn: 'Du bist nicht am Zug.',
   illegal_move: 'Ungültiger Zug.',
   conflict: 'Das Spiel hat sich gerade geändert.',
+  rate_limited: 'Bitte warte kurz, bevor du ein neues Bot-Spiel startest.',
   not_active: 'Die Partie ist bereits beendet.',
   not_found: 'Partie nicht gefunden.',
   not_expired: 'Die Zugzeit des Gegners ist noch nicht abgelaufen.',

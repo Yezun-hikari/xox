@@ -7,6 +7,9 @@ export interface MatchRow {
   x_id: string;
   o_id: string;
   state: GameState;
+  is_bot: boolean;
+  x_elo: number;
+  o_elo: number;
   status: 'active' | 'finished';
   turn_deadline: string;
   updated_at: string;
@@ -18,7 +21,7 @@ export async function loadActiveMatch(db: SupabaseClient, matchId: unknown, user
   const m = check(
     await db
       .from('matches')
-      .select('id, x_id, o_id, state, status, turn_deadline, updated_at')
+      .select('id, x_id, o_id, state, is_bot, x_elo, o_elo, status, turn_deadline, updated_at')
       .eq('id', matchId)
       .maybeSingle(),
   ) as MatchRow | null;

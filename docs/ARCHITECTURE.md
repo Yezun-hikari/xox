@@ -42,6 +42,11 @@ All return JSON; errors as `{ error: '<code>' }` with 4xx status.
 - Default privileges in `public` are revoked for `anon`/`authenticated`: every new table/sequence/function needs explicit grants (and RLS).
 - Known limit: `updateUser({ password })` cannot be verified server-side without email reauthentication; the client re-checks the current password only.
 
+- `bot-game` `{ game }` → `{ status: 'matched', matchId }` | `no_nickname` | 429 `rate_limited`. Starts (or resumes) a **rated** match against the bot. Bot name/Elo/seat are picked here (`_shared/bot.ts`: Elo = player ±100, clamped 600–1400).
+- `bot-move` `{ matchId }` → `{ state, events }`. Plays the bot's move if it is the bot's turn in the caller's bot match (`not_bot_turn` otherwise). The client calls it after a short "thinking" pause.
+
+Bots: one fixed, unusable auth user (`b07b07b0-0000-4000-8000-000000000001`, banned, no password) is the opponent so `matches` keeps its foreign keys; `matches.is_bot = true`. The bot's Elo lives only in `matches.x_elo/o_elo` for that match, never in `ratings`; `finish_match` changes only the human's rating. Farming limits: bot Elo is capped at 1400 (stronger players gain ~0) and one new bot match per 60 s. The AI is minimax with alpha-beta, even depths only (2 below Elo 1000, else 4) plus a Elo-dependent blunder chance.
+
 Elo: K = 32, start 1000, expected = 1 / (1 + 10^((Rb − Ra) / 400)). Applied atomically in SQL function `finish_match(match_id, winner_id)` (security definer, not callable by clients).
 
 ## Shared code

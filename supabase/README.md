@@ -97,8 +97,8 @@ Kontrolle im Dashboard unter **Table Editor**: bei jeder Tabelle steht "RLS enab
 npx supabase functions deploy --project-ref <reference-id>
 ```
 
-Danach sind unter **Edge Functions** sechs Funktionen sichtbar:
-`set-nickname`, `matchmake`, `move`, `resign`, `claim-timeout`, `delete-account`.
+Danach sind unter **Edge Functions** acht Funktionen sichtbar:
+`set-nickname`, `matchmake`, `move`, `resign`, `claim-timeout`, `delete-account`, `bot-game`, `bot-move`.
 
 ## 7. GitHub einrichten (automatisches Deployment)
 
