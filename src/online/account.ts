@@ -14,7 +14,7 @@ import {
 } from '../auth/index.ts';
 import { announce } from '../ui/announce.ts';
 import type { Screen } from '../ui/router.ts';
-import { errorText, loadNickname, loadRating, nicknameForm, notConfigured, setMsg } from './api.ts';
+import { errorText, loadNickname, loadRating, nicknameForm, notConfigured, ratingText, setMsg } from './api.ts';
 
 const PW = `minlength="${MIN_PASSWORD}" maxlength="72" required`;
 
@@ -55,7 +55,7 @@ export const accountScreen: Screen = {
       if (rating) {
         const r = document.createElement('p');
         r.className = 'stats';
-        r.textContent = `Elo ${rating.elo} · ${rating.games} Spiele · ${rating.wins} Siege`;
+        r.textContent = ratingText(rating);
         status.append(r);
       }
       body.append(status);

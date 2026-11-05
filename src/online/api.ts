@@ -50,6 +50,7 @@ export const errorText = (e: unknown): string =>
 
 export interface Rating {
   elo: number;
+  rd: number;
   games: number;
   wins: number;
 }
@@ -61,16 +62,20 @@ export async function loadNickname(userId: string): Promise<string | null> {
   return data?.nickname ?? null;
 }
 
+/** Rating line for the UI. Large RD = few games, the rating still moves a lot. */
+export const ratingText = (r: Rating): string =>
+  `Elo ${r.elo}${r.rd > 110 ? ' (vorläufig)' : ''} · ${r.games} Spiele · ${r.wins} Siege`;
+
 /** Own rating for this game (defaults before the first game). */
 export async function loadRating(userId: string): Promise<Rating> {
   const { data, error } = await getClient()
     .from('ratings')
-    .select('elo, games, wins')
+    .select('elo, rd, games, wins')
     .eq('user_id', userId)
     .eq('game', GAME)
     .maybeSingle();
   if (error) throw new ApiError('network');
-  return data ?? { elo: 100, games: 0, wins: 0 };
+  return data ?? { elo: 100, rd: 350, games: 0, wins: 0 };
 }
 
 /**

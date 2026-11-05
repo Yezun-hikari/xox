@@ -7,7 +7,7 @@ import { createBoard } from '../ui/board.ts';
 import { cellName, describeEvents } from '../ui/events.ts';
 import type { Screen } from '../ui/router.ts';
 import { createScoreboard } from '../ui/scoreboard.ts';
-import { call, errorText, GAME, loadNickname, loadRating, nicknameForm, notConfigured } from './api.ts';
+import { call, errorText, GAME, loadNickname, loadRating, nicknameForm, notConfigured, ratingText } from './api.ts';
 
 const BOT_OFFER_MS = 5_000;
 const HEARTBEAT_MS = 8_000; // server drops waiting players not seen for 20 s
@@ -24,6 +24,8 @@ interface MatchRow {
   status: 'active' | 'finished';
   winner_id: string | null;
   elo_delta: number | null;
+  x_delta: number | null;
+  o_delta: number | null;
   turn_deadline: string;
   is_bot: boolean;
 }
@@ -115,7 +117,7 @@ export const onlineScreen: Screen = {
         const stats = document.createElement('p');
         stats.className = 'stats';
         loadRating(user.id)
-          .then((r) => (stats.textContent = `Elo ${r.elo} · ${r.games} Spiele · ${r.wins} Siege`))
+          .then((r) => (stats.textContent = ratingText(r)))
           .catch(() => {});
         const go = button('Gegner suchen', 'primary big', () => void search());
         const change = document.createElement('a');
@@ -245,18 +247,24 @@ export const onlineScreen: Screen = {
 
         const board = createBoard($('[data-board]'), {
           async onCellClick(i) {
-            if (!m || pending || m.status !== 'active' || m.state.turn !== me) return;
+            if (!m || pending || m.status !== 'active' || m.state.turn !== me || m.state.winner) return;
+            // Draw the move at once with the same rules as the server; the server stays authoritative.
+            const before = m;
+            const local = applyMove(m.state, i);
             pending = true;
-            board.render(m.state, [], { interactive: false, myPlayer: me });
+            m = { ...m, state: local.state };
+            draw(local.events, i);
             try {
               const r = await call<{ state: GameState; events: GameEvent[] }>('move', { matchId, index: i });
               pending = false;
               if (closed || !m) return;
-              // Realtime may already have delivered this state; only animate if it is new
               if (!sameState(m.state, r.state)) applyState({ ...m, state: r.state }, r.events, i);
               else draw();
+              if (r.state.winner) void refetch(); // result and rating come from the server
             } catch (e) {
               pending = false;
+              m = before;
+              draw();
               toast(errorText(e));
               announce(errorText(e));
               void refetch();
@@ -288,7 +296,7 @@ export const onlineScreen: Screen = {
 
         /** Bot matches: after a short "thinking" pause ask the server for the bot's move, then resync. */
         function botTurn(): void {
-          if (!m?.is_bot || m.status !== 'active' || m.state.turn === me || botBusy || closed) return;
+          if (!m?.is_bot || m.status !== 'active' || m.state.turn === me || pending || botBusy || closed) return;
           botBusy = true;
           setTimeout(async () => {
             try {
@@ -299,20 +307,21 @@ export const onlineScreen: Screen = {
             await refetch();
             botBusy = false;
             botTurn(); // after an auto-pass the bot may move again
-          }, 600 + Math.random() * 700);
+          }, 200 + Math.random() * 300);
         }
 
         function resultText(): string {
           if (!m) return '';
+          if (!m.winner_id) return 'Partie abgebrochen';
           return m.winner_id === user.id ? 'Du gewinnst!' : `${opp().nick} gewinnt.`;
         }
 
         function eloText(): string {
           if (!m || m.elo_delta === null) return '';
-          const won = m.winner_id === user.id;
+          if (!m.winner_id) return 'Weniger als 2 Züge gespielt: nicht gewertet.';
           const mine = me === 'X' ? m.x_elo : m.o_elo;
-          const d = won ? m.elo_delta : -m.elo_delta;
-          return `Elo: ${mine} → ${Math.max(0, mine + d)} (${d >= 0 ? '+' : ''}${d})`;
+          const d = (me === 'X' ? m.x_delta : m.o_delta) ?? 0;
+          return `Elo: ${mine} → ${mine + d} (${d >= 0 ? '+' : ''}${d})`;
         }
 
         // shortcut: uses the local clock; the server re-checks the deadline on claim, so skew only delays the button
@@ -352,12 +361,14 @@ export const onlineScreen: Screen = {
           }
         }
 
-        async function refetch(): Promise<void> {
+        async function refetch(silent = false): Promise<void> {
           const { data, error } = await getClient().from('matches').select('*').eq('id', matchId).maybeSingle();
-          if (closed) return;
-          if (error) return void toast('Keine Verbindung zum Server.');
+          if (closed || pending) return;
+          if (error) return silent ? undefined : void toast('Keine Verbindung zum Server.');
           if (!data) return gone();
           const row = data as MatchRow;
+          // an answer older than what we already show (it was sent before our last move)
+          if (m && row.status === 'active' && row.state.moves < m.state.moves) return;
           me = row.x_id === user.id ? 'X' : 'O';
           if (!m || !sameState(m.state, row.state) || m.status !== row.status || m.turn_deadline !== row.turn_deadline) {
             applyState(row);
@@ -415,7 +426,13 @@ export const onlineScreen: Screen = {
         const timer = setInterval(tick, 1000);
         // Realtime is only a speed-up: load now and poll, so the game also works if the subscription never connects.
         void refetch();
-        const poll = setInterval(() => m?.status !== 'finished' && void refetch(), 3000);
+        // Every second while waiting for the opponent, every 3 s on our own turn.
+        let pollTick = 0;
+        const poll = setInterval(() => {
+          if (m?.status === 'finished' || botBusy) return;
+          if (m?.state.turn === me && ++pollTick % 3) return;
+          void refetch(true);
+        }, 1000);
         const onVisible = () => document.visibilityState === 'visible' && void refetch();
         document.addEventListener('visibilitychange', onVisible);
         return () => {

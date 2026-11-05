@@ -2,7 +2,7 @@
 // Strength follows the bot's Elo: more lookahead and fewer random blunders the higher it is.
 import { applyMove, legalMoves, LINES, type GameState, type Player } from './rules.ts';
 
-export const BOT_ELO_MIN = 0;
+export const BOT_ELO_MIN = 100;
 export const BOT_ELO_MAX = 1400;
 
 const NAMES = ['Robo-Rudi', 'Pixel-Pia', 'Bit-Ben', 'Byte-Bea', 'Turbo-Tim', 'Nano-Nora', 'Gizmo-Gus', 'Chip-Chantal'];
