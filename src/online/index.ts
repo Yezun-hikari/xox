@@ -1,5 +1,5 @@
 // Auto-imported by src/main.ts (import.meta.glob). Registers the online + account screens.
-import { configure } from '@yezun/konto';
+import { configure, onAuthChange } from '@yezun/konto';
 import { registerScreen } from '../ui/router.ts';
 import { accountScreen } from './account.ts';
 import { onlineScreen } from './play.ts';
@@ -20,3 +20,21 @@ addEventListener('pageshow', (e) => {
 
 registerScreen('online', onlineScreen);
 registerScreen('account', accountScreen);
+
+// Header account entry: "Anmelden" for guests and logged-out visitors, the username once logged in.
+// The username is untrusted: textContent / setAttribute only.
+const accountLink = document.querySelector<HTMLAnchorElement>('#account-link');
+if (accountLink) {
+  const label = accountLink.querySelector<HTMLElement>('.account-name')!;
+  onAuthChange((u) => {
+    const name = u && !u.isGuest ? u.username : null;
+    label.textContent = name ?? 'Anmelden';
+    if (name) {
+      accountLink.setAttribute('aria-label', `Konto: angemeldet als ${name}`);
+      accountLink.title = 'Konto';
+    } else {
+      accountLink.removeAttribute('aria-label');
+      accountLink.removeAttribute('title');
+    }
+  });
+}
