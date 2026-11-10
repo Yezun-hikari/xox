@@ -3,6 +3,4 @@ dist
 .env
 .env.*
 !.env.example
-supabase/.temp
-supabase/.branches
 .claude/

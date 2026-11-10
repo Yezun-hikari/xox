@@ -3,6 +3,8 @@
 Frontend: static Vite + TypeScript app on GitHub Pages (`https://yezun.de/xox/`).
 Backend: Supabase (Auth, Postgres + RLS, Realtime, Edge Functions). The server is authoritative for online games and Elo.
 
+**The backend source (migrations, Edge Functions, Supabase workflows) and the account system live in the central repo [konto](https://github.com/Yezun-hikari/konto)** (`supabase/`, `CONTRACT.md`). This document describes what xox relies on; konto is the source of truth.
+
 ## Privacy rules (non-negotiable)
 - No user data in the repo, in the built site, or in any public place — not even encrypted.
 - Only the public Supabase URL + anon key ship to the browser. The `service_role` key lives only in Supabase Edge Function env.
@@ -13,8 +15,8 @@ Backend: Supabase (Auth, Postgres + RLS, Realtime, Edge Functions). The server i
 ## Accounts (shared across all of Yezun's minigames)
 - Same Supabase project for every game. Auth client uses `storageKey: 'yezun-games-auth'`, so all games on `yezun.de` share one session.
 - Guests: Supabase anonymous sign-in. Register = upgrade the anonymous user in place (`updateUser({ email, password })`), so Elo is kept.
-- Username + password only. Username `^[a-z0-9_]{3,20}$` (lowercased), mapped to synthetic email `<username>@users.yezun-games.invalid` (reserved TLD, never a real mailbox; accepted by GoTrue). Password 8–72 chars. Email confirmation disabled. No password reset possible (by design: no email stored).
-- Client module: `src/auth/` (framework-free, reusable by other games, see its README). Logging into an existing account while a guest deletes that guest (best effort, via `delete-account` with the guest's token) so no orphaned data remains. Changing the password (client-side check only) and deleting a registered account (server-side check) require the current password. All games share `localStorage` on one origin, so every game must be XSS-free.
+- Username + password only. Username `^[a-z0-9_]{3,20}$` (lowercased), mapped to synthetic email `<username>@users.yezun-games.invalid` (reserved TLD, never a real mailbox; accepted by GoTrue). Password 8–72 chars. Email confirmation disabled. Password reset only via an optional verified recovery email, stored server-side outside `auth.users` (see konto).
+- Client module: the SDK `@yezun/konto` (git dependency, successor of the former `src/auth/`). Login, registration, password change/reset, recovery email and account deletion happen on the account page https://yezun.de/konto/; xox only links there with `loginUrl()` / `accountUrl()` (return to the current page) and keeps guests (`ensureSession`) and the nickname. After the redirect back, the fresh page load reads the shared session from `localStorage`; other open tabs are updated by supabase-js' BroadcastChannel, and a page restored from the back/forward cache reloads itself. Logging into an existing account while a guest deletes that guest (best effort, via `delete-account` with the guest's token) so no orphaned data remains. Changing the password (client-side check only) and deleting a registered account (server-side check) require the current password. All games share `localStorage` on one origin, so every game must be XSS-free.
 - Per-game data is keyed by a `game` text column (`'xox'` here).
 
 ## Tables (public schema)
@@ -55,10 +57,11 @@ Bots: one fixed, unusable auth user (`b07b07b0-0000-4000-8000-000000000001`, ban
 Rating: Glicko-1 per game (the system family Chess.com uses), start 100 with RD 350, floor 100, RD floor 45, RD grows back to 350 in about a year without games. Bots count with RD 200. Fewer than 2 moves played = aborted: finished without winner and without rating change. Applied atomically in SQL function `finish_match(match_id, winner_id)` (security definer, not callable by clients).
 
 ## Shared code
-- `supabase/functions/_shared/rules.ts` — game rules, imported by both the frontend and Edge Functions.
-- `supabase/functions/_shared/profanity.ts` — DE + EN filter for nicknames (`checkNickname`) and chat messages (`checkChat`: also cleans the text, catches separator obfuscation, rejects links and contact data), with leetspeak/umlaut/repeat normalization. Frontend imports it too for instant feedback; the server check is the one that counts.
+Server copies live in konto `supabase/functions/_shared/`; the frontend copies in `src/shared/` must stay identical.
+- `src/shared/rules.ts` — game rules, used by the frontend and (as copy) by the Edge Functions.
+- `src/shared/bot.ts` — bot AI (`thinkTimeMs` used by the client).
+- `src/shared/profanity.ts` — DE + EN filter for nicknames (`checkNickname`) and chat messages (`checkChat`: also cleans the text, catches separator obfuscation, rejects links and contact data), with leetspeak/umlaut/repeat normalization. Frontend imports it too for instant feedback; the server check is the one that counts.
 
 ## Ops
 - `.github/workflows/deploy.yml` builds and publishes to Pages (repo variables `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`).
-- `.github/workflows/supabase.yml` pushes migrations + functions (Supabase CLI pinned to the local version, 3.0.0) (secrets `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD`, variable `SUPABASE_PROJECT_REF`).
-- `.github/workflows/keepalive.yml` pings the project every 3 days so the free tier does not pause.
+- Supabase deploy (`supabase.yml`) and keepalive (`keepalive.yml`) workflows live in konto.

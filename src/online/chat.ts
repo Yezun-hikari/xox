@@ -1,5 +1,5 @@
-import { checkChat } from '../../supabase/functions/_shared/profanity.ts';
-import { getClient } from '../auth/index.ts';
+import { checkChat } from '../shared/profanity.ts';
+import { getClient } from '@yezun/konto';
 import { announce } from '../ui/announce.ts';
 import { play } from '../ui/sound.ts';
 import { ApiError, call, chatErrorText, setMsg } from './api.ts';

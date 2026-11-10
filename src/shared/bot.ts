@@ -1,4 +1,5 @@
 // Small game AI for XOX. Pure TS (no imports besides rules.ts): runs in Edge Functions and in vitest.
+// Copy of konto/supabase/functions/_shared/bot.ts (the Edge Functions live in the konto repo): keep both identical.
 // Strength follows the bot's Elo: deeper lookahead and fewer oversights the higher it is.
 // Mistakes are human: a weak bot overlooks a point or a threat and plays a plausible move, it never plays at random.
 import { applyMove, legalMoves, LINES, WIN_SCORE, type GameState, type Player } from './rules.ts';

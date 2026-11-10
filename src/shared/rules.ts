@@ -1,4 +1,5 @@
 // XOX 4x4 rules engine. Pure TS, no imports: runs in the browser (Vite) and in Supabase Edge Functions (Deno).
+// Copy of konto/supabase/functions/_shared/rules.ts (the Edge Functions live in the konto repo): keep both identical.
 // The server is authoritative for online games; the client uses the same code for local games and previews.
 //
 // Rules:

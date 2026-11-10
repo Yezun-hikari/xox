@@ -1,6 +1,6 @@
 import { FunctionsHttpError } from '@supabase/supabase-js';
-import { checkNickname } from '../../supabase/functions/_shared/profanity.ts';
-import { AuthFailure, dropDeadSession, ensureSession, getClient } from '../auth/index.ts';
+import { checkNickname } from '../shared/profanity.ts';
+import { AuthFailure, dropDeadSession, ensureSession, getClient } from '@yezun/konto';
 
 export const GAME = 'xox';
 

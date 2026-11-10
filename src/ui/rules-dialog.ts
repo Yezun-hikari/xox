@@ -1,4 +1,4 @@
-import { FREEZE_MOVES, WIN_SCORE } from '../../supabase/functions/_shared/rules.ts';
+import { FREEZE_MOVES, WIN_SCORE } from '../shared/rules.ts';
 
 let dialog: HTMLDialogElement | null = null;
 

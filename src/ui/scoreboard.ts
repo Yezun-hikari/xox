@@ -1,5 +1,5 @@
-import type { GameState, Player } from '../../supabase/functions/_shared/rules.ts';
-import { WIN_SCORE } from '../../supabase/functions/_shared/rules.ts';
+import type { GameState, Player } from '../shared/rules.ts';
+import { WIN_SCORE } from '../shared/rules.ts';
 import { pieceSvg } from './pieces.ts';
 
 export interface Scoreboard {

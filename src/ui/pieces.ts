@@ -1,4 +1,4 @@
-import type { Player } from '../../supabase/functions/_shared/rules.ts';
+import type { Player } from '../shared/rules.ts';
 
 /** Inline SVG for a piece; colored via CSS (.x / .o stroke). */
 export const pieceSvg = (p: Player): string =>

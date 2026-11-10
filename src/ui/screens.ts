@@ -1,5 +1,5 @@
-import type { Player } from '../../supabase/functions/_shared/rules.ts';
-import { applyMove, newGame } from '../../supabase/functions/_shared/rules.ts';
+import type { Player } from '../shared/rules.ts';
+import { applyMove, newGame } from '../shared/rules.ts';
 import { announce, toast } from './announce.ts';
 import { createBoard } from './board.ts';
 import { cellName, describeEvents } from './events.ts';
