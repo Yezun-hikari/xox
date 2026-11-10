@@ -1,8 +1,8 @@
 import type { RealtimeChannel } from '@supabase/supabase-js';
-import type { GameEvent, GameState, Player } from '../../supabase/functions/_shared/rules.ts';
-import { applyMove } from '../../supabase/functions/_shared/rules.ts';
-import { thinkTimeMs } from '../../supabase/functions/_shared/bot.ts';
-import { ensureSession, getClient, isConfigured, NOT_CONFIGURED, type AuthUser } from '../auth/index.ts';
+import type { GameEvent, GameState, Player } from '../shared/rules.ts';
+import { applyMove } from '../shared/rules.ts';
+import { thinkTimeMs } from '../shared/bot.ts';
+import { ensureSession, getClient, isConfigured, NOT_CONFIGURED, type AuthUser } from '@yezun/konto';
 import { announce, toast } from '../ui/announce.ts';
 import { createBoard } from '../ui/board.ts';
 import { cellName, describeEvents } from '../ui/events.ts';

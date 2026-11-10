@@ -1,5 +1,5 @@
-import type { GameEvent, GameState, Player } from '../../supabase/functions/_shared/rules.ts';
-import { SIZE } from '../../supabase/functions/_shared/rules.ts';
+import type { GameEvent, GameState, Player } from '../shared/rules.ts';
+import { SIZE } from '../shared/rules.ts';
 import { cellName, withoutScoredClears } from './events.ts';
 import { pieceSvg } from './pieces.ts';
 import { play, type SoundName } from './sound.ts';

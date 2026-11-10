@@ -1,5 +1,5 @@
-import type { GameEvent } from '../../supabase/functions/_shared/rules.ts';
-import { SIZE } from '../../supabase/functions/_shared/rules.ts';
+import type { GameEvent } from '../shared/rules.ts';
+import { SIZE } from '../shared/rules.ts';
 
 export const cellName = (i: number): string =>
   `Reihe ${Math.floor(i / SIZE) + 1}, Spalte ${(i % SIZE) + 1}`;

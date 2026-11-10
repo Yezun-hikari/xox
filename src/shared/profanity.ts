@@ -1,4 +1,5 @@
 // Nickname validation + profanity filter. Pure TS, no imports: runs in the browser (Vite) and in Deno Edge Functions.
+// Copy of konto/supabase/functions/_shared/profanity.ts (the Edge Functions live in the konto repo): keep both identical.
 
 export type NicknameResult = { ok: true; nickname: string } | { ok: false; reason: 'invalid' | 'profane' };
 
