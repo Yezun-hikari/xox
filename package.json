@@ -15,6 +15,6 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",
-    "@yezun/konto": "github:Yezun-hikari/konto#816605ca77116beec4e744423c27788577d7a18e"
+    "@yezun/konto": "github:Yezun-hikari/konto#5925ac2ffc31580d38376e25832fa658157c7e85"
   }
 }
