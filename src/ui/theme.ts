@@ -2,7 +2,7 @@ type Mode = 'system' | 'light' | 'dark';
 
 const KEY = 'xox-theme';
 const ORDER: Mode[] = ['system', 'light', 'dark'];
-const BG = { light: '#ffffff', dark: '#1f2023' }; // header colour (theme-color)
+const BG = { light: '#ffffff', dark: '#222224' }; // header colour (theme-color)
 const LABEL = { system: 'System', light: 'Hell', dark: 'Dunkel' };
 const ICON = {
   system:

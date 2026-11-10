@@ -8,17 +8,29 @@ import { rulesList } from './rules-dialog.ts';
 import { createScoreboard } from './scoreboard.ts';
 import { play } from './sound.ts';
 
+/** Decorative mini board for the menu (static markup). */
+const MOTIF = `<svg class="home-motif" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+  <g class="m-grid"><path d="M25 3v94M50 3v94M75 3v94M3 25h94M3 50h94M3 75h94"/></g>
+  <g class="m-x"><path d="M7.5 7.5l10 10M17.5 7.5l-10 10M82.5 32.5l10 10M92.5 32.5l-10 10M32.5 82.5l10 10M42.5 82.5l-10 10"/></g>
+  <g class="m-o"><circle cx="37.5" cy="37.5" r="6"/><circle cx="62.5" cy="62.5" r="6"/><circle cx="87.5" cy="12.5" r="6"/></g>
+</svg>`;
+
 export const homeScreen: Screen = {
   title: 'Start',
   mount(root) {
     root.innerHTML = `
       <section class="home">
-        <h1 tabindex="-1">Tic-Tac-Toe auf 4×4</h1>
-        <p class="lead">Mit Punkten, Räumen und Einfrieren. Zu zweit an einem Gerät oder online gegen andere mit Elo-Wertung.</p>
-        <nav class="menu" aria-label="Spielmodus">
-          <a class="btn primary" href="#/local">Lokal spielen</a>
-          <a class="btn" href="#/online">Online spielen</a>
-        </nav>
+        <div class="home-intro">
+          <div class="home-text">
+            <h1 tabindex="-1">Tic-Tac-Toe auf 4×4</h1>
+            <p class="lead">Mit Punkten, Räumen und Einfrieren. Zu zweit an einem Gerät oder online gegen andere mit Elo-Wertung.</p>
+            <nav class="menu" aria-label="Spielmodus">
+              <a class="btn primary" href="#/local">Lokal spielen</a>
+              <a class="btn" href="#/online">Online spielen</a>
+            </nav>
+          </div>
+          ${MOTIF}
+        </div>
         <section class="home-rules" aria-labelledby="home-rules-title">
           <h2 id="home-rules-title">Regeln</h2>
           ${rulesList()}

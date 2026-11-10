@@ -1,68 +1,81 @@
 /* ---------- Tokens ---------- */
-/* Neutral greys, one calm accent (muted blue). X and O keep their own, non-neon colours. */
+/* Airy warm-neutral page, two cheerful piece colours: coral X, fresh blue O.
+   The accent is a deeper shade of the O blue; *-ink are text-safe shades (≥4.5:1). */
 :root {
   color-scheme: light;
-  --bg: #f4f4f3;
+  --bg: #fbfaf8;
   --surface: #ffffff;
-  --surface-2: #e9e9e7;
-  --text: #1d1f22;
-  --muted: #5d6167;
-  --border: #d5d6d3;
-  --border-strong: #b9bbb8;
-  --x: #b8433a;
-  --o: #24786d;
-  --accent: #2f5d8a;
-  --accent-hover: #264d74;
+  --surface-2: #f1efeb;
+  --text: #1f1d1b;
+  --muted: #66625c;
+  --border: #e7e4df;
+  --border-strong: #d6d2cb;
+  --grid: #e0dcd5;
+  --x: #e8553f;
+  --o: #1f8ad1;
+  --x-ink: #c93a24;
+  --o-ink: #1670b0;
+  --accent: #1670b0;
+  --accent-hover: #125d93;
   --accent-text: #ffffff;
-  --focus: #2f5d8a;
-  --ice: #e2ebf2;
-  --ice-edge: #7f9fba;
-  --radius: 6px;
-  --radius-sm: 4px;
+  --focus: #1670b0;
+  --ice: #e7eef3;
+  --ice-edge: #5f7a8c;
+  --ice-text: #ffffff;
+  --radius: 10px;
+  --radius-sm: 6px;
   --gutter: 16px;
   --content: 40rem;
   --wide: 64rem;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.5;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     color-scheme: dark;
-    --bg: #17181a;
-    --surface: #1f2023;
-    --surface-2: #131416;
-    --text: #e4e5e7;
-    --muted: #9b9fa6;
-    --border: #34363a;
-    --border-strong: #4a4d52;
-    --x: #e07b72;
-    --o: #5bb5a8;
-    --accent: #84a9cf;
-    --accent-hover: #9bbad9;
-    --accent-text: #15171a;
-    --focus: #84a9cf;
-    --ice: #23303b;
-    --ice-edge: #6f8ea8;
+    --bg: #19191b;
+    --surface: #222224;
+    --surface-2: #2c2c2f;
+    --text: #ededeb;
+    --muted: #a3a3a0;
+    --border: #333336;
+    --border-strong: #46464a;
+    --grid: #3d3d41;
+    --x: #f2806e;
+    --o: #5cb0ec;
+    --x-ink: #f2806e;
+    --o-ink: #5cb0ec;
+    --accent: #5cb0ec;
+    --accent-hover: #7ec1f0;
+    --accent-text: #111214;
+    --focus: #7ec1f0;
+    --ice: #283038;
+    --ice-edge: #8fa6b6;
+    --ice-text: #111214;
   }
 }
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #17181a;
-  --surface: #1f2023;
-  --surface-2: #131416;
-  --text: #e4e5e7;
-  --muted: #9b9fa6;
-  --border: #34363a;
-  --border-strong: #4a4d52;
-  --x: #e07b72;
-  --o: #5bb5a8;
-  --accent: #84a9cf;
-  --accent-hover: #9bbad9;
-  --accent-text: #15171a;
-  --focus: #84a9cf;
-  --ice: #23303b;
-  --ice-edge: #6f8ea8;
+  --bg: #19191b;
+  --surface: #222224;
+  --surface-2: #2c2c2f;
+  --text: #ededeb;
+  --muted: #a3a3a0;
+  --border: #333336;
+  --border-strong: #46464a;
+  --grid: #3d3d41;
+  --x: #f2806e;
+  --o: #5cb0ec;
+  --x-ink: #f2806e;
+  --o-ink: #5cb0ec;
+  --accent: #5cb0ec;
+  --accent-hover: #7ec1f0;
+  --accent-text: #111214;
+  --focus: #7ec1f0;
+  --ice: #283038;
+  --ice-edge: #8fa6b6;
+  --ice-text: #111214;
 }
 
 /* ---------- Base ---------- */
@@ -91,12 +104,13 @@ h2 {
   margin: 0;
 }
 h1 {
-  font-size: 1.5rem;
-  font-weight: 650;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 h2 {
-  font-size: 1.1rem;
-  font-weight: 650;
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 h1:focus,
 h2:focus {
@@ -140,10 +154,16 @@ a {
   margin: 0 auto;
   padding: 0 var(--gutter);
 }
+.brand .tx {
+  color: var(--x);
+}
+.brand .to {
+  color: var(--o);
+}
 .brand {
-  font-weight: 750;
-  font-size: 1.2rem;
-  letter-spacing: 0.06em;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
   color: var(--text);
   text-decoration: none;
   padding: 6px 2px;
@@ -219,8 +239,11 @@ a {
   }
 }
 @media (max-width: 379.98px) {
+  .brand {
+    font-size: 1.2rem;
+  }
   .icon-btn {
-    width: 40px;
+    width: 38px;
   }
   .account-link {
     margin-left: 4px;
@@ -320,30 +343,92 @@ main {
   display: grid;
   gap: 16px;
 }
+.home-intro {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.home-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 14px;
+}
+.home h1 {
+  font-size: 2rem;
+}
 .home .lead {
   margin: 0;
   color: var(--muted);
-  max-width: 34rem;
+  font-size: 1.05rem;
+  max-width: 30rem;
+}
+.home-motif {
+  flex: none;
+  width: 132px;
+  height: 132px;
+  fill: none;
+  stroke-linecap: round;
+}
+.m-grid {
+  stroke: var(--grid);
+  stroke-width: 3;
+}
+.m-x {
+  stroke: var(--x);
+  stroke-width: 4.5;
+}
+.m-o {
+  stroke: var(--o);
+  stroke-width: 4.5;
 }
 .menu {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 .menu .btn {
   min-width: 11rem;
 }
 .home-rules {
-  margin-top: 16px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
   display: grid;
   gap: 12px;
 }
 @media (max-width: 479.98px) {
+  /* Motif sits beside the heading only; intro text and buttons use the full width */
+  .home-intro {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px 16px;
+    align-items: center;
+  }
+  .home-text {
+    display: contents;
+  }
+  .home-text > :not(h1) {
+    grid-column: 1 / -1;
+  }
+  .home h1 {
+    grid-row: 1;
+    font-size: 1.6rem;
+  }
+  .home-motif {
+    grid-row: 1;
+    grid-column: 2;
+    width: 64px;
+    height: 64px;
+  }
   .menu {
     display: grid;
+  }
+  .home-rules {
+    padding: 16px;
   }
 }
 
@@ -389,7 +474,7 @@ main {
   gap: 8px;
 }
 .game-head h1 {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 .game > div:not(.game-head, .end, .board-wrap),
 .board-wrap {
@@ -398,36 +483,37 @@ main {
   justify-items: center;
 }
 
+/* Player chips: piece, name, points as dots; the player to move gets a tint and an underline */
 .scoreboard {
   width: 100%;
   max-width: 28rem;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 10px;
 }
 .player {
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto auto;
   column-gap: 10px;
-  row-gap: 2px;
+  row-gap: 3px;
   align-items: center;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-radius: var(--radius);
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: inset 0 3px 0 transparent;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: inset 0 -3px 0 transparent;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   min-width: 0;
 }
-.player.is-turn {
-  border-color: var(--pc);
-  box-shadow: inset 0 3px 0 var(--pc);
+.player.is-turn,
+.player.is-winner {
+  background: color-mix(in srgb, var(--pc) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--pc) 35%, var(--surface));
+  box-shadow: inset 0 -3px 0 var(--pc);
 }
 .player.is-winner {
-  border-color: var(--pc);
-  box-shadow: inset 0 3px 0 var(--pc);
-  background: color-mix(in srgb, var(--pc) 8%, var(--surface));
+  background: color-mix(in srgb, var(--pc) 18%, var(--surface));
 }
 .player.x {
   --pc: var(--x);
@@ -437,19 +523,19 @@ main {
 }
 .player-icon {
   grid-row: span 2;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
 }
 .player-icon svg {
   width: 100%;
   height: 100%;
   fill: none;
   stroke: var(--pc);
-  stroke-width: 12;
+  stroke-width: 14;
   stroke-linecap: round;
 }
 .player-name {
-  font-weight: 600;
+  font-weight: 650;
   font-size: 0.95rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -457,37 +543,36 @@ main {
 }
 .pips {
   display: flex;
-  gap: 5px;
+  gap: 6px;
 }
 .pip {
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
-  border: 2px solid var(--pc);
-  opacity: 0.4;
-  transition: background-color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+  border: 2px solid color-mix(in srgb, var(--pc) 45%, var(--surface));
+  transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
 }
 .pip.on {
   background: var(--pc);
-  opacity: 1;
+  border-color: var(--pc);
   animation: pip 0.45s ease;
 }
 
 .status {
   margin: 0;
   min-height: 1.5em;
-  font-size: 1.05rem;
-  font-weight: 650;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: var(--pc, var(--text));
 }
 .status[data-player='x'] {
-  --pc: var(--x);
+  --pc: var(--x-ink);
 }
 .status[data-player='o'] {
-  --pc: var(--o);
+  --pc: var(--o-ink);
 }
 .status.won {
-  font-size: 1.3rem;
+  font-size: 1.45rem;
   animation: pop 0.4s ease;
 }
 
@@ -502,17 +587,14 @@ main {
 }
 
 /* ---------- Board ---------- */
+/* A classic grid of rounded lines; cells are transparent and only tint on hover / focus. */
 .board {
-  --gap: clamp(5px, 1.6vw, 8px);
+  position: relative;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--gap);
-  width: min(100%, 28rem, calc(100dvh - 300px));
+  width: min(100%, 26rem, calc(100dvh - 300px));
   min-width: min(100%, 260px);
-  padding: var(--gap);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface-2);
+  aspect-ratio: 1;
 }
 .board[data-turn='x'] {
   --tc: var(--x);
@@ -520,19 +602,63 @@ main {
 .board[data-turn='o'] {
   --tc: var(--o);
 }
+.grid-lines,
+.strikes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.grid-lines {
+  stroke: var(--grid);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.strikes {
+  z-index: 2;
+  fill: none;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+.strike.x {
+  stroke: var(--x);
+}
+.strike.o {
+  stroke: var(--o);
+}
+.strike {
+  stroke-dasharray: 1;
+  animation: strike 1.1s ease-out forwards;
+}
 .cell {
   position: relative;
   aspect-ratio: 1;
   display: grid;
   place-items: center;
   padding: 0;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
+  border: 0;
+  border-radius: 14%;
+  background: transparent;
+  color: inherit;
   cursor: pointer;
   touch-action: manipulation;
-  overflow: hidden;
+}
+/* Tint / focus tile, inset so it never covers the grid lines */
+.cell::before {
+  content: '';
+  position: absolute;
+  inset: 9%;
+  border-radius: 14%;
   transition: background-color 0.15s ease;
+}
+.cell:focus-visible {
+  outline: none;
+}
+.cell:focus-visible::before {
+  outline: 3px solid var(--focus);
+  outline-offset: 0;
 }
 .cell > * {
   grid-area: 1 / 1;
@@ -542,12 +668,16 @@ main {
   cursor: default;
 }
 @media (hover: hover) {
-  .board:not(.is-locked) .cell:not(.filled):hover {
-    background: color-mix(in srgb, var(--tc) 9%, var(--surface));
+  .board:not(.is-locked) .cell:not(.filled):hover::before {
+    background: color-mix(in srgb, var(--tc) 12%, transparent);
   }
+}
+.board:not(.is-locked) .cell:not(.filled):focus-visible::before {
+  background: color-mix(in srgb, var(--tc) 12%, transparent);
 }
 .piece,
 .ghost {
+  position: relative;
   width: 100%;
   height: 100%;
   display: grid;
@@ -555,11 +685,12 @@ main {
 }
 .piece svg,
 .ghost svg {
-  width: 62%;
-  height: 62%;
+  width: 68%;
+  height: 68%;
   fill: none;
-  stroke-width: 11;
+  stroke-width: 13;
   stroke-linecap: round;
+  overflow: visible;
 }
 .x svg {
   stroke: var(--x);
@@ -567,61 +698,73 @@ main {
 .o svg {
   stroke: var(--o);
 }
-.cell.placed .piece {
-  animation: pop 0.22s ease-out;
+/* Draw-in when placed: X stroke by stroke, O round from the top */
+.cell.placed .piece svg > * {
+  stroke-dasharray: 1;
+  animation: draw 0.2s ease-out both;
+}
+.cell.placed .piece svg > :nth-child(2) {
+  animation-delay: 0.14s;
 }
 
-/* Frozen: icy tile, desaturated piece, countdown */
-.cell.frozen {
+/* Frozen: icy tile, faded piece, countdown badge on the piece */
+.cell.frozen::before {
   background: var(--ice);
-  border-color: var(--ice-edge);
-  box-shadow: inset 0 0 0 1px var(--ice-edge);
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ice-edge) 45%, transparent);
 }
-.cell.frozen .piece {
-  opacity: 0.55;
-  filter: saturate(0.3);
+.cell.frozen .piece svg {
+  opacity: 0.45;
+  filter: saturate(0.5);
 }
 .badge {
   display: none;
   position: absolute;
-  top: 4px;
-  right: 4px;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 4px;
+  z-index: 1;
+  top: 15%;
+  right: 15%;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 5px;
   place-items: center;
-  border-radius: var(--radius-sm);
+  border-radius: 12px;
   background: var(--ice-edge);
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 700;
+  color: var(--ice-text);
+  font-size: 0.85rem;
+  font-weight: 750;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 .cell.frozen .badge {
   display: grid;
 }
-.cell.just-frozen {
+.cell.just-frozen::before {
   animation: freeze 0.5s ease-out;
 }
 
 /* Event ghosts: previous pieces animated out over the new state */
 .ghost {
   position: absolute;
-  inset: 0;
+  inset: 9%;
+  width: auto;
+  height: auto;
   pointer-events: none;
-  border-radius: inherit;
+  border-radius: 14%;
+}
+.ghost svg {
+  width: 82%;
+  height: 82%;
 }
 .ghost.score {
   animation: score 1s ease-in forwards;
 }
 .ghost.score.x {
-  background: color-mix(in srgb, var(--x) 22%, transparent);
+  background: color-mix(in srgb, var(--x) 16%, transparent);
 }
 .ghost.score.o {
-  background: color-mix(in srgb, var(--o) 22%, transparent);
+  background: color-mix(in srgb, var(--o) 16%, transparent);
 }
 .ghost.clear {
-  background: color-mix(in srgb, var(--muted) 16%, transparent);
+  background: color-mix(in srgb, var(--muted) 14%, transparent);
   animation: clear 0.8s ease-in forwards;
 }
 .ghost.thaw {
@@ -676,10 +819,10 @@ dialog.rules::backdrop {
   min-width: 8rem;
 }
 .tx {
-  color: var(--x);
+  color: var(--x-ink);
 }
 .to {
-  color: var(--o);
+  color: var(--o-ink);
 }
 
 /* ---------- Animations ---------- */
@@ -735,9 +878,35 @@ dialog.rules::backdrop {
     transform: scale(1.15);
   }
 }
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes strike {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 1;
+  }
+  35% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  70% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
 @keyframes freeze {
   0% {
-    background: var(--surface);
+    background: transparent;
   }
   100% {
     background: var(--ice);
@@ -751,6 +920,9 @@ dialog.rules::backdrop {
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
+  }
+  .cell.placed .piece svg > * {
+    animation-delay: 0s !important;
   }
 }
 

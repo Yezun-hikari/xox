@@ -1,3 +1,4 @@
+import '@fontsource-variable/figtree/wght.css';
 import './style.css';
 import { hasScreen, registerScreen, startRouter } from './ui/router.ts';
 import { homeScreen, localScreen, placeholderScreen } from './ui/screens.ts';

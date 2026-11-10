@@ -26,6 +26,32 @@ export interface Board {
 }
 
 const N = SIZE * SIZE;
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const STEP = 100 / SIZE; // board drawn in a 100×100 viewBox
+
+/** The classic hand-drawn grid: SIZE-1 rounded lines each way between the cells. */
+function gridLines(): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('class', 'grid-lines');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+  for (let k = 1; k < SIZE; k++) {
+    const v = k * STEP;
+    for (const [x1, y1, x2, y2] of [
+      [v, 2, v, 98],
+      [2, v, 98, v],
+    ]) {
+      const l = document.createElementNS(SVG_NS, 'line');
+      l.setAttribute('x1', String(x1));
+      l.setAttribute('y1', String(y1));
+      l.setAttribute('x2', String(x2));
+      l.setAttribute('y2', String(y2));
+      svg.append(l);
+    }
+  }
+  return svg;
+}
 
 export function createBoard(container: HTMLElement, { onCellClick }: BoardOptions): Board {
   const el = document.createElement('div');
@@ -33,6 +59,7 @@ export function createBoard(container: HTMLElement, { onCellClick }: BoardOption
   el.setAttribute('role', 'group');
   el.setAttribute('aria-label', 'Spielfeld, 4 mal 4. Pfeiltasten zum Bewegen, Enter zum Setzen.');
 
+  el.append(gridLines());
   const cells: HTMLButtonElement[] = [];
   const keys: string[] = []; // last rendered piece per cell, to skip needless DOM work
   let state: GameState | null = null;
@@ -79,6 +106,14 @@ export function createBoard(container: HTMLElement, { onCellClick }: BoardOption
     }
   });
 
+  // Overlay above the cells for strike-throughs (decorative, never takes clicks).
+  const strikes = document.createElementNS(SVG_NS, 'svg');
+  strikes.setAttribute('class', 'strikes');
+  strikes.setAttribute('viewBox', '0 0 100 100');
+  strikes.setAttribute('aria-hidden', 'true');
+  strikes.setAttribute('focusable', 'false');
+  el.append(strikes);
+
   container.append(el);
 
   function ghost(i: number, p: Player, kind: string): void {
@@ -90,6 +125,28 @@ export function createBoard(container: HTMLElement, { onCellClick }: BoardOption
     const done = () => g.remove();
     g.addEventListener('animationend', done, { once: true });
     setTimeout(done, 1500); // fallback if animations are disabled
+  }
+
+  /** Strike-through over a scored line, drawn in and faded out. */
+  function strike(line: number[], p: Player): void {
+    const ends = [Math.min(...line), Math.max(...line)].map((i) => [
+      ((i % SIZE) + 0.5) * STEP,
+      (Math.floor(i / SIZE) + 0.5) * STEP,
+    ]);
+    const [[x1, y1], [x2, y2]] = ends;
+    const len = Math.hypot(x2 - x1, y2 - y1);
+    const ext = 8 / len; // reach a little past the outer pieces
+    const l = document.createElementNS(SVG_NS, 'line');
+    l.setAttribute('class', `strike ${p.toLowerCase()}`);
+    l.setAttribute('pathLength', '1');
+    l.setAttribute('x1', String(x1 - (x2 - x1) * ext));
+    l.setAttribute('y1', String(y1 - (y2 - y1) * ext));
+    l.setAttribute('x2', String(x2 + (x2 - x1) * ext));
+    l.setAttribute('y2', String(y2 + (y2 - y1) * ext));
+    strikes.append(l);
+    const done = () => l.remove();
+    l.addEventListener('animationend', done, { once: true });
+    setTimeout(done, 1800); // fallback if animations are disabled
   }
 
   function retrigger(i: number, cls: string): void {
@@ -147,6 +204,7 @@ export function createBoard(container: HTMLElement, { onCellClick }: BoardOption
       if (e.kind !== 'pass') sounds.add(e.kind);
       if (e.kind === 'score' || e.kind === 'clear') {
         for (const i of e.line) ghost(i, prev.board[i]?.p ?? mover, e.kind);
+        if (e.kind === 'score') strike(e.line, e.player);
       } else if (e.kind === 'freeze') {
         retrigger(e.cell, 'just-frozen');
       } else if (e.kind === 'thaw') {
