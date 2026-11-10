@@ -4,31 +4,27 @@ import { announce, toast } from './announce.ts';
 import { createBoard } from './board.ts';
 import { cellName, describeEvents } from './events.ts';
 import type { Screen } from './router.ts';
-import { openRules } from './rules-dialog.ts';
+import { rulesList } from './rules-dialog.ts';
 import { createScoreboard } from './scoreboard.ts';
 import { play } from './sound.ts';
-
-const LOGO = `<svg class="logo" viewBox="0 0 120 40" aria-hidden="true">
-  <path class="lx" d="M6 8l24 24M30 8L6 32"/><circle class="lo" cx="60" cy="20" r="12"/><path class="lx" d="M90 8l24 24M114 8L90 32"/></svg>`;
 
 export const homeScreen: Screen = {
   title: 'Start',
   mount(root) {
     root.innerHTML = `
       <section class="home">
-        <div class="hero">
-          ${LOGO}
-          <h1 tabindex="-1">XOX</h1>
-          <p class="tagline">Tic-Tac-Toe auf 4×4 – mit Punkten, Räumen und Einfrieren.</p>
-        </div>
+        <h1 tabindex="-1">Tic-Tac-Toe auf 4×4</h1>
+        <p class="lead">Mit Punkten, Räumen und Einfrieren. Zu zweit an einem Gerät oder online gegen andere mit Elo-Wertung.</p>
         <nav class="menu" aria-label="Spielmodus">
-          <a class="btn primary big" href="#/local">Lokal spielen<small>Zu zweit an einem Gerät</small></a>
-          <a class="btn big" href="#/online">Online spielen<small>Gegen andere mit Elo-Wertung</small></a>
-          <a class="btn big" href="#/account">Konto<small>Anmelden und Spitzname</small></a>
-          <button class="btn ghost-btn" type="button" data-rules>Wie spielt man?</button>
+          <a class="btn primary" href="#/local">Lokal spielen</a>
+          <a class="btn" href="#/online">Online spielen</a>
         </nav>
+        <section class="home-rules" aria-labelledby="home-rules-title">
+          <h2 id="home-rules-title">Regeln</h2>
+          ${rulesList()}
+          <p class="hint">Steuerung: Tippen oder Klicken – oder Pfeiltasten und Enter.</p>
+        </section>
       </section>`;
-    root.querySelector('[data-rules]')!.addEventListener('click', openRules);
   },
 };
 
@@ -56,8 +52,8 @@ export const localScreen: Screen = {
     root.innerHTML = `
       <section class="game">
         <div class="game-head">
-          <a class="back" href="#/">← Menü</a>
           <h1 tabindex="-1">Lokales Spiel</h1>
+          <a class="back" href="#/">← Menü</a>
         </div>
         <div data-score></div>
         <p class="status" data-status></p>

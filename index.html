@@ -6,8 +6,8 @@
     <title>XOX</title>
     <meta name="description" content="XOX – Tic-Tac-Toe auf 4×4 mit Punkten, Räumen und Einfrieren. Lokal oder online." />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#f5f6fa" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0e1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1f2023" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -21,18 +21,30 @@
   </head>
   <body>
     <header class="topbar">
-      <a class="brand" href="#/" aria-label="XOX – Startseite">XOX</a>
-      <div class="topbar-actions">
-        <button class="icon-btn" id="help" type="button" aria-label="Wie spielt man?" title="Wie spielt man?">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>
-        </button>
-        <button class="icon-btn" id="mute-toggle" type="button" aria-label="Ton stummschalten" title="Ton stummschalten" aria-pressed="false">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5v5H7l4.5 4v-13L7 9.5z"/><path class="snd-on" d="M15 9.5a3.5 3.5 0 0 1 0 5M17.5 7a7 7 0 0 1 0 10"/><path class="snd-off" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg>
-        </button>
-        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Farbschema wechseln"></button>
+      <div class="topbar-inner">
+        <a class="brand" href="#/" aria-label="XOX – Startseite">XOX</a>
+        <nav class="topbar-actions" aria-label="Einstellungen und Konto">
+          <button class="icon-btn" id="help" type="button" aria-label="Wie spielt man?" title="Wie spielt man?">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg>
+          </button>
+          <button class="icon-btn" id="mute-toggle" type="button" aria-label="Ton stummschalten" title="Ton stummschalten" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5v5H7l4.5 4v-13L7 9.5z"/><path class="snd-on" d="M15 9.5a3.5 3.5 0 0 1 0 5M17.5 7a7 7 0 0 1 0 10"/><path class="snd-off" d="M15.5 9.5l5 5M20.5 9.5l-5 5"/></svg>
+          </button>
+          <button class="icon-btn" id="theme-toggle" type="button" aria-label="Farbschema wechseln"></button>
+          <a class="account-link" id="account-link" href="#/account">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 19.5c1.2-3.3 3.8-5 7-5s5.8 1.7 7 5"/></svg>
+            <span class="account-name">Anmelden</span>
+          </a>
+        </nav>
       </div>
     </header>
     <main id="app"></main>
+    <footer class="site-footer">
+      <div class="site-footer-inner">
+        <span>XOX</span>
+        <a href="https://yezun.de/">yezun.de</a>
+      </div>
+    </footer>
     <div id="live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
     <div id="toast" class="toast" aria-hidden="true"></div>
     <script type="module" src="/src/main.ts"></script>

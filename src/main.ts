@@ -27,4 +27,13 @@ function initMute(btn: HTMLButtonElement): void {
 initTheme(document.querySelector<HTMLButtonElement>('#theme-toggle')!);
 initMute(document.querySelector<HTMLButtonElement>('#mute-toggle')!);
 document.querySelector('#help')!.addEventListener('click', openRules);
+
+// Mark the header account entry while the account screen is shown.
+const accountLink = document.querySelector<HTMLAnchorElement>('#account-link')!;
+const markAccount = () => {
+  if (/^#\/account(\?|$)/.test(location.hash)) accountLink.setAttribute('aria-current', 'page');
+  else accountLink.removeAttribute('aria-current');
+};
+addEventListener('hashchange', markAccount);
+markAccount();
 startRouter(document.querySelector<HTMLElement>('#app')!);

@@ -229,7 +229,7 @@ export const onlineScreen: Screen = {
       show(() => {
         view.className = 'game';
         view.innerHTML = `
-          <div class="game-head"><a class="back" href="#/">← Menü</a><h1 tabindex="-1">Online-Partie</h1></div>
+          <div class="game-head"><h1 tabindex="-1">Online-Partie</h1><a class="back" href="#/">← Menü</a></div>
           <p class="opponent" data-opp></p>
           <div data-score></div>
           <p class="status" data-status></p>
